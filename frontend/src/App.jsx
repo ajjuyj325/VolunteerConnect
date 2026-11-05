@@ -64,6 +64,7 @@ function App() {
       </form>
 
       <h2>Registered Volunteers</h2>
+      <p>Total Volunteers: {volunteers.length}</p>
 
       {volunteers.map((volunteer, index) => (
         <p key={index}>
