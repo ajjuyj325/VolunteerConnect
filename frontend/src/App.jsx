@@ -5,6 +5,7 @@ function App() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [volunteers, setVolunteers] = useState([]);
+  const [deletingIndex, setDeletingIndex] = useState(null);
 
   const API = "http://localhost:8000";
 
@@ -39,6 +40,30 @@ function App() {
     await loadVolunteers();
   }
 
+  async function deleteVolunteer(index) {
+    if (!window.confirm(`Delete ${volunteers[index].name} from the volunteer list?`)) {
+      return;
+    }
+
+    setDeletingIndex(index);
+    try {
+      const response = await fetch(`${API}/volunteers/${index}`, {
+        method: "DELETE"
+      });
+
+      if (!response.ok) {
+        alert("Could not delete volunteer.");
+        return;
+      }
+
+      await loadVolunteers();
+    } catch {
+      alert("Could not delete volunteer.");
+    } finally {
+      setDeletingIndex(null);
+    }
+  }
+
   return (
     <div style={{ padding: "40px", fontFamily: "Arial" }}>
       <h1>VolunteerConnect</h1>
@@ -68,7 +93,14 @@ function App() {
 
       {volunteers.map((volunteer, index) => (
         <p key={index}>
-          {volunteer.name} - {volunteer.email}
+          {volunteer.name} - {volunteer.email}{" "}
+          <button
+            type="button"
+            onClick={() => deleteVolunteer(index)}
+            disabled={deletingIndex !== null}
+          >
+            {deletingIndex === index ? "Deleting..." : "Delete"}
+          </button>
         </p>
       ))}
     </div>

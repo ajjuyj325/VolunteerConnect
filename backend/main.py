@@ -1,5 +1,5 @@
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -31,3 +31,11 @@ def get_volunteers():
 def add_volunteer(volunteer: Volunteer):
     volunteers.append(volunteer.model_dump())
     return {"message": "Volunteer registered!"}
+
+@app.delete("/volunteers/{volunteer_index}")
+def delete_volunteer(volunteer_index: int):
+    if volunteer_index < 0 or volunteer_index >= len(volunteers):
+        raise HTTPException(status_code=404, detail="Volunteer not found")
+
+    volunteers.pop(volunteer_index)
+    return {"message": "Volunteer deleted!"}
